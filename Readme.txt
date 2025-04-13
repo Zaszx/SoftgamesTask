@@ -9,7 +9,7 @@ When all cards are dealt, they are gathered back into the main stack, and then d
 Tricky parts:
 
 The stacking effect on the deck makes this tricky. Moving cards from one stack to another can be done with a simple DOTween method, but this risks moving them too fast in the y axis.
-As a result, the moving card may go through the other cards in the stack and may cause a buggy looking visual effect.
+As a result, the moving card may go through other cards in the stack and may cause a buggy looking visual effect.
 My solution to this was to not touch the y position of the moving card for the first and last 30% of the animation, and only move it on the y axis during the middle 40%.
 
 

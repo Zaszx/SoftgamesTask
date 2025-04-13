@@ -3,23 +3,11 @@ using UnityEngine;
 
 public class Card : MonoBehaviour
 {
-    private Deck deck;
-
-	public void Detach()
-	{
-		deck?.RemoveCard(this);
-		deck = null;
-	}
-
-	public void Attach(Deck deck)
-	{
-		deck.AddCard(this);
-		this.deck = deck;
-	}
+    public Deck deck;
 
 	public void Fly(Deck target, float speed)
 	{
-		Detach();
+		deck?.RemoveCard(this);
 
 		Vector3 targetPos = target.GetTargetPosition() + transform.up * 0.03f;
 		Quaternion targetRotation = target.transform.rotation;
@@ -50,7 +38,8 @@ public class Card : MonoBehaviour
 		).SetEase(Ease.InOutQuad)
 		 .OnComplete(() =>
 		 {
-			 Attach(target);
+			 target.AddCard(this);
+			 this.deck = target;
 		 });
 	}
 }
