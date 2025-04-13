@@ -5,9 +5,21 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Scenes/Intro.unity
+    guid: fcb406edd2502b043b7ce40c5cdacf05
+  - enabled: 1
+    path: Assets/Scenes/CardShuffle.unity
+    guid: fe2963ab892cf2440a51948124192afe
+  - enabled: 1
+    path: Assets/Scenes/DialogueScene.unity
+    guid: 27db6c8776c736040b712d161b17eae4
+  - enabled: 1
+    path: Assets/Scenes/Fire.unity
+    guid: 3eabb1abf293131449b41f4762ca6c2c
   m_configObjects:
     com.unity.adaptiveperformance.simulator.provider_settings: {fileID: 11400000, guid: 9227e98e4b6e046c5b175924d7b5d070, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
