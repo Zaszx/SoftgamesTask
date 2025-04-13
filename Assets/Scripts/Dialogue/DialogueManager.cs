@@ -27,38 +27,38 @@ public class DialogueManager
 	public async Task Init()
 	{
 		await LoadDialogueData();
-		// Optional: print test
-		foreach (var entry in dialogueData.dialogue)
-			Debug.Log($"[{entry.name}]: {entry.text}");
 	}
-
-	async Task LoadDialogueData()
+	private async Task<DialogueData> FetchDialogueData(string url)
 	{
-		TextAsset jsonFile = Resources.Load<TextAsset>("Dialogue/DialogueData");
-		if (jsonFile == null)
+		using var request = UnityWebRequest.Get(url);
+		var op = request.SendWebRequest();
+
+		while (!op.isDone)
+			await Task.Yield();
+
+		if (request.result != UnityWebRequest.Result.Success)
 		{
-			Debug.LogError("Could not find DialogueData.json in Resources/Dialogue/");
-			return;
+			Debug.LogError($"Failed to fetch JSON: {request.error}");
+			return null;
 		}
 
-		dialogueData = JsonUtility.FromJson<Wrapper>($"{{\"data\":{jsonFile.text}}}").data;
+		string json = request.downloadHandler.text;
+		return JsonUtility.FromJson<Wrapper>($"{{\"data\":{json}}}").data;
+	}
 
-		int emojiIndex = 0;
-
+	private async Task<TMP_SpriteAsset> PrepareEmojiSpriteAsset()
+	{
 		int totalWidth = 0;
 		foreach (Emoji emoji in dialogueData.emojies)
 		{
 			Texture2D tex = await DownloadTextureAsync(emoji.url);
 			if (tex != null)
 			{
-				/*if (tex.height != 64)
+				if (tex.height != 128)
 				{
-					Texture2D scaled = new Texture2D(64 * tex.width / tex.height, 64, TextureFormat.RGBA32, false);
-					Graphics.ConvertTexture(tex, scaled);
-					tex = scaled;
-				}*/
+					tex = RescaleToHeight(tex, 128);
+				}
 				emoji.texture = tex;
-				emoji.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
 				totalWidth += tex.width;
 			}
 			else
@@ -68,7 +68,7 @@ public class DialogueManager
 		}
 
 		var atlas = new Texture2D(totalWidth, 128, TextureFormat.RGBA32, false);
-		atlas.SetPixels(new Color[totalWidth * 128]); // clear
+		atlas.SetPixels(new Color[totalWidth * 128]);
 
 		var spriteAsset = ScriptableObject.CreateInstance<TMP_SpriteAsset>();
 		spriteAsset.name = "SimpleEmojiAsset";
@@ -78,14 +78,14 @@ public class DialogueManager
 		var versionField = typeof(TMP_SpriteAsset).GetField("m_Version", BindingFlags.Instance | BindingFlags.NonPublic);
 		if (versionField != null)
 		{
-			versionField.SetValue(spriteAsset, "1.1.0"); // TMP expects version >= 1
+			versionField.SetValue(spriteAsset, "1.1.0");
 		}
 
 		int currentX = 0;
 
 		foreach (Emoji emoji in dialogueData.emojies)
 		{
-			if(emoji.texture != null)
+			if (emoji.texture != null)
 			{
 				atlas.SetPixels(currentX, 0, emoji.texture.width, emoji.texture.height, emoji.texture.GetPixels());
 				emoji.rect = new Rect(currentX, 0, emoji.texture.width, emoji.texture.height);
@@ -118,8 +118,15 @@ public class DialogueManager
 
 		spriteAsset.UpdateLookupTables();
 
-		dialogueData.emojiSpriteAsset = spriteAsset;
+		return spriteAsset;
+	}
 
+	async Task LoadDialogueData()
+	{
+		dialogueData = await FetchDialogueData("https://private-624120-softgamesassignment.apiary-mock.com/v2/magicwords");
+
+		dialogueData.emojiSpriteAsset = await PrepareEmojiSpriteAsset();
+		
 		foreach (Avatar avatar in dialogueData.avatars)
 		{
 			Texture2D tex = await DownloadTextureAsync(avatar.url);
@@ -138,6 +145,28 @@ public class DialogueManager
 			dialogueEntry.avatar = dialogueData.GetAvatar(dialogueEntry.name);
 		}
 	}
+
+	private Texture2D RescaleToHeight(Texture2D original, int targetHeight)
+	{
+		if (original == null) return null;
+
+		float aspectRatio = (float)original.width / original.height;
+		int targetWidth = Mathf.RoundToInt(targetHeight * aspectRatio);
+
+		RenderTexture rt = RenderTexture.GetTemporary(targetWidth, targetHeight);
+		RenderTexture.active = rt;
+		Graphics.Blit(original, rt);
+
+		Texture2D scaled = new Texture2D(targetWidth, targetHeight, TextureFormat.RGBA32, false);
+		scaled.ReadPixels(new Rect(0, 0, targetWidth, targetHeight), 0, 0);
+		scaled.Apply();
+
+		RenderTexture.active = null;
+		RenderTexture.ReleaseTemporary(rt);
+
+		return scaled;
+	}
+
 
 	private async Task<Texture2D> DownloadTextureAsync(string url)
 	{

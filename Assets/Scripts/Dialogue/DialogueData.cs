@@ -45,9 +45,4 @@ public class DialogueData
 	{
 		return avatars.FirstOrDefault(x => x.name == name);
 	}
-
-	public Emoji GetEmoji(string name)
-	{
-		return emojies.FirstOrDefault(x => x.name == name);
-	}
 }

@@ -7,7 +7,7 @@ public class DialogueDisplay : MonoBehaviour
 {
     public Image leftAvatar;
     public Image rightAvatar;
-    public TMP_Text text;
+    public TMP_Text dialogueText;
 
     int _dialogueIndex = 0;
 
@@ -21,7 +21,10 @@ public class DialogueDisplay : MonoBehaviour
 
     async void Start()
     {
-        await DialogueManager.Instance.Init();
+		leftAvatar.gameObject.SetActive(false);
+		rightAvatar.gameObject.SetActive(false);
+        dialogueText.text = "Initializing...";
+		await DialogueManager.Instance.Init();
         _dialogueState = DialogueState.Ready;
         DisplayDialogue();
     }
@@ -35,11 +38,15 @@ public class DialogueDisplay : MonoBehaviour
         rightAvatar.gameObject.SetActive(false);
         avatarImage.gameObject.SetActive(true);
 
+        if(dialogueEntry.avatar == null)
+		{
+            Debug.LogError("Avatar not found: " + dialogueEntry.name);
+		}
+
         avatarImage.sprite = dialogueEntry.avatar?.sprite;
 		string formatted = Regex.Replace(dialogueEntry.text, @"\{(.*?)\}", "<sprite name=$1>");
-        text.spriteAsset = DialogueManager.Instance.dialogueData.emojiSpriteAsset;
-        text.text = formatted;
-		//text.text = dialogueEntry.text;
+        dialogueText.spriteAsset = DialogueManager.Instance.dialogueData.emojiSpriteAsset;
+        dialogueText.text = formatted;
 	}
 
     void Update()
