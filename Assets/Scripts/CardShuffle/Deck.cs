@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Deck : MonoBehaviour
 {
-    public Card baseCard;
+    [SerializeField] private Card baseCard;
 
     [SerializeField] private Transform cardsParent;
 
@@ -19,12 +19,11 @@ public class Deck : MonoBehaviour
         _cards.Add(card);
         card.transform.position = GetTargetPosition();
         card.transform.SetParent(cardsParent);
-        card.deck = this;
 	}
 
     public Vector3 GetTargetPosition()
 	{
-        return transform.position + _cards.Count * 0.002f * transform.forward + _cards.Count * 0.002f * transform.right + _cards.Count * 0.01f * transform.up;
+        return transform.position + _cards.Count * 0.002f * transform.forward + _cards.Count * 0.002f * transform.right + _cards.Count * 0.001f * transform.up;
     }
 
     public void RemoveCard(Card card)
@@ -35,7 +34,6 @@ public class Deck : MonoBehaviour
 		}
         _cards.Remove(card);
         card.transform.SetParent(null);
-        card.deck = null;
 	}
 
     public Card GetTopCard()
