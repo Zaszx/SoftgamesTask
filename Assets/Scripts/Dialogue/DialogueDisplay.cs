@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System.Text.RegularExpressions;
 
 public class DialogueDisplay : MonoBehaviour
 {
@@ -35,7 +36,10 @@ public class DialogueDisplay : MonoBehaviour
         avatarImage.gameObject.SetActive(true);
 
         avatarImage.sprite = dialogueEntry.avatar?.sprite;
-        text.text = dialogueEntry.text;
+		string formatted = Regex.Replace(dialogueEntry.text, @"\{(.*?)\}", "<sprite name=$1>");
+        text.spriteAsset = DialogueManager.Instance.dialogueData.emojiSpriteAsset;
+        text.text = formatted;
+		//text.text = dialogueEntry.text;
 	}
 
     void Update()

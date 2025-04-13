@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Linq;
+using TMPro;
 
 [System.Serializable]
 public class DialogueEntry
@@ -16,6 +17,8 @@ public class Emoji
 	public string name;
 	public string url;
 
+	[System.NonSerialized] public Texture2D texture;
+	[System.NonSerialized] public Rect rect;
 	[System.NonSerialized] public Sprite sprite;
 }
 
@@ -35,6 +38,8 @@ public class DialogueData
 	public DialogueEntry[] dialogue;
 	public Emoji[] emojies;
 	public Avatar[] avatars;
+
+	[System.NonSerialized] public TMP_SpriteAsset emojiSpriteAsset;
 
 	public Avatar GetAvatar(string name)
 	{
