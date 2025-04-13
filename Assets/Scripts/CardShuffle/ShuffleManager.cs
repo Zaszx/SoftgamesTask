@@ -10,7 +10,13 @@ public class ShuffleManager : MonoBehaviour
 
     public int InitialCardCount = 144;
 
-    int deckIndex = 0;
+	public float DealingSpeed = 1.0f;
+	public float DealingCardSpeed = 2.0f;
+
+	public float GatheringSpeed = 0.3f;
+	public float GatheringCardSpeed = 0.5f;
+
+	int deckIndex = 0;
 
     void Start()
     {
@@ -20,28 +26,58 @@ public class ShuffleManager : MonoBehaviour
             mainDeck.AddCard(newCard);
 		}
 
-        Shuffle();
+        Deal();
     }
 
-    void Shuffle()
+    void Deal()
 	{
-		DOVirtual.DelayedCall(1f, () =>
+		DOVirtual.DelayedCall(DealingSpeed, () =>
 		{
             Card topCard = mainDeck.GetTopCard();
             if(topCard != null)
 			{
-				topCard.Fly(playerDecks[deckIndex]);
+				topCard.Fly(playerDecks[deckIndex], DealingCardSpeed);
 				deckIndex++;
 				if (deckIndex == playerDecks.Length)
 					deckIndex = 0;
 
-				Shuffle();
+				Deal();
+			}
+			else
+			{
+				deckIndex = 0;
+				DOVirtual.DelayedCall(DealingCardSpeed, () => Gather());
 			}
         });
 	}
 
-    void Update()
-    {
-        
-    }
+    void Gather()
+	{
+		DOVirtual.DelayedCall(GatheringSpeed, () =>
+		{
+			bool done = true;
+			foreach (Deck deck in playerDecks)
+			{
+				Card topCard = playerDecks[deckIndex].GetTopCard();
+				if (topCard != null)
+				{
+					done = false;
+					topCard.Fly(mainDeck, GatheringCardSpeed);
+					deckIndex++;
+					if (deckIndex == playerDecks.Length)
+						deckIndex = 0;
+
+				}
+			}
+			if (done)
+			{
+				deckIndex = 0;
+				DOVirtual.DelayedCall(GatheringCardSpeed, () => Deal());
+			}
+			else
+			{
+				Gather();
+			}
+		});
+	}
 }

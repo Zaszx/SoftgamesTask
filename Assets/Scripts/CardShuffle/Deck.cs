@@ -9,13 +9,23 @@ public class Deck : MonoBehaviour
 
     private List<Card> _cards = new List<Card>();
 
-    public void AddCard(Card card)
+	private void Awake()
+	{
+        baseCard.gameObject.SetActive(false);
+	}
+
+	public void AddCard(Card card)
 	{
         _cards.Add(card);
-        card.transform.position = transform.position + _cards.Count * 0.01f * transform.forward + _cards.Count * 0.01f * transform.right + _cards.Count * 0.0001f * transform.up;
+        card.transform.position = GetTargetPosition();
         card.transform.SetParent(cardsParent);
         card.deck = this;
 	}
+
+    public Vector3 GetTargetPosition()
+	{
+        return transform.position + _cards.Count * 0.002f * transform.forward + _cards.Count * 0.002f * transform.right + _cards.Count * 0.01f * transform.up;
+    }
 
     public void RemoveCard(Card card)
 	{
