@@ -22,7 +22,15 @@ public class DialogueManager
 		}
 	}
 
-	public DialogueData dialogueData;
+	private DialogueData _dialogueData;
+	
+	public DialogueData DialogueData
+	{
+		get
+		{
+			return _dialogueData;
+		}
+	}
 
 	public async Task Init()
 	{
@@ -49,7 +57,7 @@ public class DialogueManager
 	private async Task<TMP_SpriteAsset> PrepareEmojiSpriteAsset()
 	{
 		int totalWidth = 0;
-		foreach (Emoji emoji in dialogueData.emojies)
+		foreach (Emoji emoji in _dialogueData.emojies)
 		{
 			Texture2D tex = await DownloadTextureAsync(emoji.url);
 			if (tex != null)
@@ -83,7 +91,7 @@ public class DialogueManager
 
 		int currentX = 0;
 
-		foreach (Emoji emoji in dialogueData.emojies)
+		foreach (Emoji emoji in _dialogueData.emojies)
 		{
 			if (emoji.texture != null)
 			{
@@ -123,11 +131,11 @@ public class DialogueManager
 
 	async Task LoadDialogueData()
 	{
-		dialogueData = await FetchDialogueData("https://private-624120-softgamesassignment.apiary-mock.com/v2/magicwords");
+		_dialogueData = await FetchDialogueData("https://private-624120-softgamesassignment.apiary-mock.com/v2/magicwords");
 
-		dialogueData.emojiSpriteAsset = await PrepareEmojiSpriteAsset();
+		_dialogueData.emojiSpriteAsset = await PrepareEmojiSpriteAsset();
 		
-		foreach (Avatar avatar in dialogueData.avatars)
+		foreach (Avatar avatar in _dialogueData.avatars)
 		{
 			Texture2D tex = await DownloadTextureAsync(avatar.url);
 			if (tex != null)
@@ -140,9 +148,9 @@ public class DialogueManager
 			}
 		}
 
-		foreach (DialogueEntry dialogueEntry in dialogueData.dialogue)
+		foreach (DialogueEntry dialogueEntry in _dialogueData.dialogue)
 		{
-			dialogueEntry.avatar = dialogueData.GetAvatar(dialogueEntry.name);
+			dialogueEntry.avatar = _dialogueData.GetAvatar(dialogueEntry.name);
 		}
 	}
 

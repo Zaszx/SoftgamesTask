@@ -31,7 +31,7 @@ public class DialogueDisplay : MonoBehaviour
 
     void DisplayDialogue()
 	{
-        DialogueEntry dialogueEntry = DialogueManager.Instance.dialogueData.dialogue[_dialogueIndex];
+        DialogueEntry dialogueEntry = DialogueManager.Instance.DialogueData.dialogue[_dialogueIndex];
 
         Image avatarImage = dialogueEntry.avatar?.position == "left" ? leftAvatar : rightAvatar;
         leftAvatar.gameObject.SetActive(false);
@@ -45,7 +45,7 @@ public class DialogueDisplay : MonoBehaviour
 
         avatarImage.sprite = dialogueEntry.avatar?.sprite;
 		string formatted = Regex.Replace(dialogueEntry.text, @"\{(.*?)\}", "<sprite name=$1>");
-        dialogueText.spriteAsset = DialogueManager.Instance.dialogueData.emojiSpriteAsset;
+        dialogueText.spriteAsset = DialogueManager.Instance.DialogueData.emojiSpriteAsset;
         dialogueText.text = formatted;
 	}
 
@@ -54,7 +54,7 @@ public class DialogueDisplay : MonoBehaviour
         if(_dialogueState == DialogueState.Ready && Input.GetKeyDown(KeyCode.Mouse0))
 		{
             _dialogueIndex++;
-            if(_dialogueIndex >= DialogueManager.Instance.dialogueData.dialogue.Length)
+            if(_dialogueIndex >= DialogueManager.Instance.DialogueData.dialogue.Length)
 			{
                 gameObject.SetActive(false);
                 _dialogueState = DialogueState.Finished;
