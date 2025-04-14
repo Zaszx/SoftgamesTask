@@ -30,6 +30,9 @@ I normally would prefer to use addressables in this case, which would have made 
 Also, the initializing text on the dialogue screen while the dialogue was fetched and processed looks bad. 
 This would normally be moved to a loading screen, but I thought that would be outside the scope of this task.
 
+I did some error handling on missing emojis and avatars (which was somewhat forced because the json does have a missing avatar, and a broken emoji link).
+I didn't handle the case where the connection fails and downloading the json itself fails. 
+
 Tricky parts:
 
 The problem here is to make TextMeshPro work with emoji sprites. 
